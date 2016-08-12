@@ -2,6 +2,12 @@ const express = require('express');
 const app = express();
 const graphqlHTTP = require('express-graphql');
 const PORT = process.env.PORT || 3000;
+const pg = require('pg');
+
+const pool = new pg.Pool({
+  database: 'graphql_server_db',
+  user: 'postgres'
+});
 
 // function, the actual executor of the schema
 const {graphql} = require('graphql');
