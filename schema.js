@@ -7,20 +7,15 @@ const {
   GraphQLID
 } = require('graphql');
 
-let counter = 3;
-let counters = [42, 43];
-let counterObj = {
-  id : 55,
-  value : 42
-};
-let countersObj = [
-  { id : 550,
-    value : 43
-  },
-  { id : 551,
-    value : 44
-  }
-];
+const humps = require('humps');
+
+const person = humps.camelizeKeys({
+  id: 1,
+  firstName: 'Andrew',
+  lastName: 'Sasaki',
+  email: 'asasaki@gmail.com',
+  spouse_id: 2
+});
 
 const CounterObjType = new GraphQLObjectType({
   name : 'CounterObj',
@@ -34,46 +29,53 @@ const CounterObjType = new GraphQLObjectType({
   }
 });
 
+const PersonType = new GraphQLObjectType({
+  name : 'Person',
+  fields : {
+    id : {
+      type : GraphQLID
+    },
+    firstName : {
+      type : GraphQLString
+    },
+    lastName : {
+      type : GraphQLString
+    },
+    email : {
+      type : GraphQLString
+    },
+    spouse_id : {
+      type : GraphQLInt
+    }
+  }
+
+});
+
 
 const queryType = new GraphQLObjectType({
   name : 'RootQuery',
   fields : {
-    hello : {
-      type : GraphQLString,
-      resolve : () => 'World'
-    },
-    counter : {
-      type : GraphQLInt,
-      resolve : () => counter
-    },
-    counters : {
-      type : new GraphQLList(GraphQLInt),
-      resolve : () => counters
-    },
-    counterObj: {
-      type: CounterObjType,
-      resolve: () => counterObj
-    },
-    countersObj: {
-      type: new GraphQLList(CounterObjType),
-      resolve: () => countersObj
+    person : {
+      type : PersonType,
+      resolve : () => person
     }
   }
 });
 
-const mutationType = new GraphQLObjectType({
-  name: 'RootMutation',
-  fields: {
-    incrementCounter: {
-      type: GraphQLInt,
-      resolve: () => ++counter
-    }
-  }
-});
+
+
+// const mutationType = new GraphQLObjectType({
+//   name: 'RootMutation',
+//   fields: {
+//     incrementCounter: {
+//       type: GraphQLInt,
+//       resolve: () => ++counter
+//     }
+//   }
+// });
 
 const mySchema = new GraphQLSchema({
-  query : queryType,
-  mutation : mutationType
+  query : queryType
 });
 
 module.exports = mySchema;
