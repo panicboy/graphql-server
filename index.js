@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express();
+const graphqlHTTP = require('express-graphql');
 const PORT = process.env.PORT || 3000;
 
 // function, the actual executor of the schema
@@ -22,14 +23,18 @@ app.get('/', (req,res) => {
   res.send('Hello world!');
 });
 
-app.get('/graphql', (req,res) => {
-  const {query} = req.query;
+app.use('/graphql', graphqlHTTP({
+    schema : mySchema
+  }));
 
-  graphql(mySchema, query)
-    .then((results) => {
-      res.json(results);
-    });
-});
+// app.use('/graphql', (req,res) => {
+//   const {query} = req.query;
+
+//   graphql(mySchema, query)
+//     .then((results) => {
+//       res.json(results);
+//     });
+// });
 
 app.listen(PORT, () => {
   console.log(`Aerver listening on port ${PORT}`);
