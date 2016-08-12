@@ -4,6 +4,7 @@ const graphqlHTTP = require('express-graphql');
 const PORT = process.env.PORT || 3000;
 const pg = require('pg');
 
+
 const pool = new pg.Pool({
   database: 'graphql_server_db',
   user: 'postgres'
@@ -31,7 +32,8 @@ app.get('/', (req,res) => {
 
 app.use('/graphql', graphqlHTTP({
     schema : mySchema,
-    graphiql: true
+    graphiql: true,
+    context: { pool }
   }));
 
 // app.use('/graphql', (req,res) => {
@@ -44,5 +46,5 @@ app.use('/graphql', graphqlHTTP({
 // });
 
 app.listen(PORT, () => {
-  console.log(`Aerver listening on port ${PORT}`);
+  console.log(`Server listening on port ${PORT}`);
 });

@@ -4,34 +4,17 @@ const {
   GraphQLString,
   GraphQLInt,
   GraphQLList,
-  GraphQLID
+  GraphQLID,
+  GraphQLNonNull
 } = require('graphql');
 
 const humps = require('humps');
+const db = require('./database.js');
 
-const person = humps.camelizeKeys({
-  id: 1,
-  firstName: 'Andrew',
-  lastName: 'Sasaki',
-  email: 'asasaki@gmail.com',
-  spouse_id: 2
-});
-
-const CounterObjType = new GraphQLObjectType({
-  name : 'CounterObj',
-  fields : {
-    id : {
-      type : GraphQLID
-    },
-    value : {
-      type : GraphQLInt
-    }
-  }
-});
 
 const PersonType = new GraphQLObjectType({
   name : 'Person',
-  fields : {
+  fields : ()=> ({
     id : {
       type : GraphQLID
     },
@@ -44,35 +27,42 @@ const PersonType = new GraphQLObjectType({
     email : {
       type : GraphQLString
     },
-    spouse_id : {
+    spouseId : {
       type : GraphQLInt
+    },
+    fullName : {
+      type : GraphQLString,
+      resolve : obj => `${obj.firstName} ${obj.lastName}`
+    },
+    spouse : {
+      type : PersonType,
+      resolve: ( obj, args, { pool }, info ) => db(pool).getUserById(obj.spouseId)
     }
-  }
-
+  })
 });
 
 
 const queryType = new GraphQLObjectType({
   name : 'RootQuery',
   fields : {
-    person : {
-      type : PersonType,
-      resolve : () => person
+    person: {
+      type: PersonType,
+      args : {
+        id : {
+          type : new GraphQLNonNull(GraphQLInt)
+        }
+      },
+      // 3rd is context ------v
+      resolve: ( obj, args, { pool }, info ) =>
+        db(pool).getUserById(args.id)
+    },
+    people: {
+      type: new GraphQLList(PersonType),
+      resolve: ( obj, args, { pool } ) => db(pool).getUsers()
     }
   }
 });
 
-
-
-// const mutationType = new GraphQLObjectType({
-//   name: 'RootMutation',
-//   fields: {
-//     incrementCounter: {
-//       type: GraphQLInt,
-//       resolve: () => ++counter
-//     }
-//   }
-// });
 
 const mySchema = new GraphQLSchema({
   query : queryType
