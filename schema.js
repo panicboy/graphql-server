@@ -16,13 +16,24 @@ const queryType = new GraphQLObjectType({
     },
     counter : {
       type : GraphQLInt,
-      resolve : () => counter++
+      resolve : () => counter
+    }
+  }
+});
+
+const mutationType = new GraphQLObjectType({
+  name: 'RootMutation',
+  fields: {
+    incrementCounter: {
+      type: GraphQLInt,
+      resolve: () => ++counter
     }
   }
 });
 
 const mySchema = new GraphQLSchema({
-  query : queryType
+  query : queryType,
+  mutation : mutationType
 });
 
 module.exports = mySchema;
