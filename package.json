@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/panicboy/graphql-server#readme",
   "dependencies": {
+    "express": "^4.14.0",
     "graphql": "^0.6.2"
   }
 }
