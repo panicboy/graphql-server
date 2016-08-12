@@ -16,7 +16,7 @@ const queryType = new GraphQLObjectType({
     },
     counter : {
       type : GraphQLInt,
-      resolve : () => counter
+      resolve : () => counter++
     }
   }
 });
